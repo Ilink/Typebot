@@ -5,7 +5,7 @@ functionality may or may not be added in the future. EG: it could check if an ob
 part of the prototype chain of another.
 
 
-Usage:
+Simple Usage:
 
 var provided = {
     arg1 : "arg1",
@@ -17,6 +17,20 @@ var should_be = {
     arg2 : "object"
 }
 
+More Complex Usage:
+
+var provided = {
+    arg1 : "arg1",
+    arg1 : 2
+}
+
+var should_be = {
+    arg1 : {
+        type : ['string', 'number'],
+        error_message : "optional error message"
+    }
+}
+
 This would throw an error for arg2 because it is the wrong type
  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
@@ -24,6 +38,27 @@ var Typebot = function(){
     if(this instanceof Typebot){
         // Private
         var errors = [];
+        var checker;
+
+        var complex_checker = function(){
+
+        }
+
+        var simple_checker = function(){
+
+        }
+
+        var checker_strategy = function(should_be_property){
+            if(typeof should_be_property === 'object'){
+                if(typeof should_be_property.type !== 'undefined'){
+                    // check if this could just be:  typeof should_be_property.type !== 'undefined'
+                    checker = complex_checker;
+                }
+            }
+            else {
+                checker = simple_checker;
+            }
+        }
 
         // Public
         this.check = function(check_me, should_be, extra_error_message){
