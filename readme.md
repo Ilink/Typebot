@@ -1,7 +1,7 @@
-==Typebot
+## Typebot
 Typebot is a simple Javascript typechecker. It is primarily designed to typecheck against Javascript primitive types.
 
-===Usage
+### Usage
 	var typebot = Typebot();
 	var provided = {
 	    arg1 : "arg1",
