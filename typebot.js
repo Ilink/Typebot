@@ -37,16 +37,50 @@ This would throw an error for arg2 because it is the wrong type
 var Typebot = function(){
     if(this instanceof Typebot){
         // Private
-        var errors = [];
         var checker;
 
-        var complex_checker = function(){
+        var complex_checker = function(check_me, should_be, extra_error_message){
+            var correct = true;
+            var errors = [];
+            var should_be_value;
+            $.each(check_me, function(key, value) {
+                var current_should_be = should_be[key];
+                var check_me_type = typeof value;
 
+                $.each(current_should_be.type, function(should_be_type_key, should_be_type_value){
+                    if(should_be_type_value !== check_me_type){
+                        correct = false;
+                        should_be_value = should_be_type_value;
+                    } else {
+                        correct = true;
+                    }
+                });
+
+                if(!correct){
+                    var error = key + ' is a(n) ' + check_me_type + ' when it should be a(n) ' + should_be_value;
+                    error = error + '. ' + current_should_be.error_message;
+                    error = error + '. ' + extra_error_message;
+                    errors.push(error);
+                }
+
+            });
+            return errors;
         }
 
-        var simple_checker = function(){
-
+        var simple_checker = function(check_me, should_be, extra_error_message){
+            var errors = [];
+            $.each(check_me, function(key, value) {
+                if(typeof value !== should_be[key]){
+                    var should_be_val = should_be[key];
+                    var error = key + ' is a(n) ' + typeof value + ' when it should be a(n) ' + should_be_val;
+                    error = error + '. ' + extra_error_message;
+                    errors.push(error);
+                }
+            });
+            return errors;
         }
+
+        checker = simple_checker;
 
         var checker_strategy = function(should_be_property){
             if(typeof should_be_property === 'object'){
@@ -73,7 +107,7 @@ var Typebot = function(){
             return errors;
         }
 
-        this.log_errors = function(){
+        this.log_errors = function(errors){
             if(typeof console !== 'undefined'){
                 $.each(errors, function(key, value){
                    console.log(value);
