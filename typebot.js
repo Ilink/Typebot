@@ -54,6 +54,7 @@ var Typebot = function(){
                     } else {
                         correct = true;
                     }
+                    console.log(correct);
                 });
 
                 if(!correct){
@@ -96,9 +97,11 @@ var Typebot = function(){
 
         // Public
         this.check = function(check_me, should_be, extra_error_message){
+            var errors = [];
             $.each(check_me, function(key, value) {
                 if(typeof value !== should_be[key]){
                     var should_be_val = should_be[key];
+
                     var error = key + ' is a(n) ' + typeof value + ' when it should be a(n) ' + should_be_val;
                     error = error + '. ' + extra_error_message;
                     errors.push(error);
@@ -108,7 +111,7 @@ var Typebot = function(){
         }
 
         this.log_errors = function(errors){
-            if(typeof console !== 'undefined'){
+            if(typeof console !== 'undefined' && typeof errors !== 'undefined'){
                 $.each(errors, function(key, value){
                    console.log(value);
                 });
