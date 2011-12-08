@@ -87,12 +87,13 @@ var Typebot = function(){
             if(typeof should_be_property === 'object'){
                 if(typeof should_be_property.type !== 'undefined'){
                     // check if this could just be:  typeof should_be_property.type !== 'undefined'
-                    checker = complex_checker;
+                    return complex_checker;
                 }
             }
             else {
-                checker = simple_checker;
+                return simple_checker;
             }
+            console.log(checker);
         }
 
         // Public
