@@ -1,4 +1,5 @@
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Typebot is a simple typechecker. It can be used to easily typecheck a list of arguments.
 Currently, it does not check anything beyond primitive types (string, int, etc). That
 functionality may or may not be added in the future. EG: it could check if an object is
@@ -6,20 +7,7 @@ part of the prototype chain of another.
 
 I recommend using this as a Singleton, but do as you will!
 
-
-= = = = Simple Usage: = = = =
-
-var provided = {
-    arg1 : "arg1",
-    arg1 : 2
-}
-
-var should_be = {
-    arg1 : "string",
-    arg2 : "object"
-}
-
-= = = = More Complex Usage: = = = =
+= = = = Usage: = = = =
 
 var provided = {
     arg1 : "arg1",
@@ -39,7 +27,7 @@ var should_be = {
         range : '1-2'
 }
 
-This would throw an error for arg2 because it is the wrong type
+
  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 var Typebot = function(){
@@ -66,7 +54,8 @@ var Typebot = function(){
         var single_type_checker = function(check_me, should_be){
             if (typeof check_me !== should_be) {
                 console.log('single type checker error: wrong type!');
-                return 'single type checker error: wrong type' // need a system for combining error messages into one big JSON error message
+                var error = new_error('single type checker error: wrong type!', check_me);
+                return error;
             } else {
                 return true;
             }
@@ -75,13 +64,26 @@ var Typebot = function(){
         var check_in_range = function(check_me, should_be_array){
             var found = false;
             $.each(should_be_array, function(index, value){
-               if(value === typeof check_me) {
+               if(value.substring(0,1) === '!'){
+                   var _value = value.substring(1, value.length);
+                   console.log(_value);
+                   if(_value === typeof check_me){
+                       found = false;
+                       return found;
+                   }
+                   else found = true
+               }
+
+               else if(value === typeof check_me) {
                    found = true;
-                   return true;
+                   return found;
                }
             });
+
             if (found === false){
+                var error = new_error('provided argument is not of type within specified set', check_me);
                 console.log('provided argument is not of type within specified set');
+                return error;
             }
             return found;
         }
@@ -92,14 +94,33 @@ var Typebot = function(){
             for(var i = range[0]; i<=range[1]; i++){
                 if(check_me === i) found = true;
             }
-            if(!found) console.log('value not in range');
+            if(!found) {
+                console.log('provided argument is not of type within specified set');
+                var error = new_error('provided argument is not of type within specified set', check_me);
+                return error;
+            }
             return found;
         }
 
-        var complex_checker = function(check_me, should_be, extra_error_message){
+        var add_error = function(errors, error){
+            if(error !== true){
+                errors.push(error); // this may seem odd: either the checker returns True, meaning no error or it returns an error
+            }
+        }
+
+        var new_error = function(because, where){
+            var new_message = {
+                "because" : because,
+                "where" : where
+            }
+            return new_message;
+        }
+
+        var complex_checker = function(check_me, should_be){
             var correct = true,
                 errors = [],
-                should_be_value;
+                should_be_value,
+                error;
 
             $.each(should_be, function(key, value) {
                 var current_check_me = check_me[key];
@@ -107,71 +128,28 @@ var Typebot = function(){
                 if (typeof value.type !== 'undefined'){
                     if(typeof value.type === 'object' && array_checker(value.type)){
                         console.log('type is an array of type values');
-                        check_in_range(current_check_me, value.type);
-                        // OR parsing
+                        error = check_in_range(current_check_me, value.type);
+                        add_error(errors, error);
+                        // OR \ NOT parsing
                     }
-                    else if (typeof value.type === 'string'){
+                    if (typeof value.type === 'string'){
                         console.log('type is a single type');
 //                        console.log(current_check_me + ' ' + value.type);
-                        single_type_checker(current_check_me, value.type);
+                        error = single_type_checker(current_check_me, value.type);
+                        add_error(errors, error);
                     }
                     if (typeof value.range === 'string') {
                         console.log('range specified');
-                        check_in_value_range(current_check_me, value.range);
+                        error = check_in_value_range(current_check_me, value.range);
+                        add_error(errors, error);
                     }
                 } else throw 'Type must be defined';
 
+            });
 
-//                $.each(current_should_be.type, function(should_be_type_key, should_be_type_value){
-//                    if(should_be_type_value !== check_me_type){
-//                        correct = false;
-//                        should_be_value = should_be_type_value;
-//                    } else {
-//                        correct = true;
-//                    }
-//                    console.log(correct);
-                });
-
-//                if(!correct){
-//                    var error = key + ' is a(n) ' + check_me_type + ' when it should be a(n) ' + should_be_value;
-//                    error = error + '. ' + current_should_be.error_message;
-//                    error = error + '. ' + extra_error_message;
-//                    errors.push(error);
-//                }
-
-//            });
-            return errors;
+            if(errors.length < 1) return true; // no errors present
+            else return errors;
         }
-
-//        var complex_checker = function(check_me, should_be, extra_error_message){
-//            var correct = true,
-//                errors = [],
-//                should_be_value;
-//
-//            $.each(check_me, function(key, value) {
-//                var current_should_be = should_be[key],
-//                    check_me_type = typeof value;
-//
-//                $.each(current_should_be.type, function(should_be_type_key, should_be_type_value){
-//                    if(should_be_type_value !== check_me_type){
-//                        correct = false;
-//                        should_be_value = should_be_type_value;
-//                    } else {
-//                        correct = true;
-//                    }
-//                    console.log(correct);
-//                });
-//
-//                if(!correct){
-//                    var error = key + ' is a(n) ' + check_me_type + ' when it should be a(n) ' + should_be_value;
-//                    error = error + '. ' + current_should_be.error_message;
-//                    error = error + '. ' + extra_error_message;
-//                    errors.push(error);
-//                }
-//
-//            });
-//            return errors;
-//        }
 
         var simple_checker = function(check_me, should_be, extra_error_message){
             var errors = [];
@@ -204,22 +182,10 @@ var Typebot = function(){
         // = = = = Public = = = = //
 
         this.check = function(check_me, should_be, extra_error_message){
-            complex_checker(check_me, should_be, extra_error_message);
+            var test = complex_checker(check_me, should_be);
+            console.log(test);
+            return test;
         }
-
-//        this.check = function(check_me, should_be, extra_error_message){
-//            var errors = [];
-//            $.each(check_me, function(key, value) {
-//                if(typeof value !== should_be[key]){
-//                    var should_be_val = should_be[key];
-//
-//                    var error = key + ' is a(n) ' + typeof value + ' when it should be a(n) ' + should_be_val;
-//                    error = error + '. ' + extra_error_message;
-//                    errors.push(error);
-//                }
-//            });
-//            return errors;
-//        }
 
         this.log_errors = function(errors){
             if(typeof console !== 'undefined' && typeof errors !== 'undefined'){

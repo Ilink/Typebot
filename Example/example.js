@@ -22,5 +22,6 @@ var should_be_complex = {
 }
 
 var checker = Typebot();
-checker.check(check_me, should_be_complex, 'Everything is ruined forever.');
+var test = checker.check(check_me, should_be_complex, 'Everything is ruined forever.');
+console.log(test);
 checker.log_errors();
