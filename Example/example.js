@@ -1,6 +1,6 @@
 var check_me = {
     arg1 : "arg1",
-    arg1 : 2
+    arg2 : 2
 }
 
 var should_be = {
@@ -10,11 +10,13 @@ var should_be = {
 
 var should_be_complex = {
     arg1 : {
-        type : ['string', 'number'],
+//        type : ['string', 'number'],
+        type : 'string',
         error_message : "optional error message"
     },
     arg2 : {
         type : ['string', 'number'],
+        range : '1-2',
         error_message : "optional error message"
     }
 }
