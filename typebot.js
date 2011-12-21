@@ -42,13 +42,11 @@ var Typebot = function(){
         }
 
         var array_checker = function(arr){
-            if(typeof arr !== 'undefined' && typeof arr.push === 'function' && typeof arr === 'object') return true
-            else return false
+            return Object.prototype.toString.call(arr) === '[object Array]';
         }
 
         var object_checker = function(obj){
-            if(typeof obj !== 'undefined' && typeof obj.push !== 'function' && typeof obj === 'object') return true
-            else return false
+            return Object.prototype.toString.call(arr) === '[object Object]';
         }
 
         var single_type_checker = function(check_me, should_be){
