@@ -76,6 +76,18 @@ test("make sure it can handle multiple failures", function(){
         }
    }
 
-   notEqual(typebot.check(number_check_me, should_be), true, "should be able to handle multiple errors");
+   notEqual(typebot.check(number_check_me, should_be, true), true, "should be able to handle multiple errors");
    typebot.log_errors();
 });
+
+//test("Testing automatic logging", function(){
+//   var should_be = {
+//        arg1 : {
+//            type : 'string',
+//            range: '0-1'
+//        }
+//   }
+//
+//   notEqual(typebot.check(number_check_me, should_be, true), true, "should be able to handle multiple errors");
+//   typebot.log_errors();
+//});

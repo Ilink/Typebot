@@ -51,7 +51,7 @@ var Typebot = function(){
 
         var single_type_checker = function(check_me, should_be){
             if (typeof check_me !== should_be) {
-                console.log('single type checker error: wrong type!');
+//                console.log('single type checker error: wrong type!');
                 var error = new_error('single type checker error: wrong type!', check_me);
                 return error;
             } else {
@@ -64,7 +64,7 @@ var Typebot = function(){
             $.each(should_be_array, function(index, value){
                if(value.substring(0,1) === '!'){
                    var _value = value.substring(1, value.length);
-                   console.log(_value);
+//                   console.log(_value);
                    if(_value === typeof check_me){
                        found = false;
                        return found;
@@ -80,7 +80,7 @@ var Typebot = function(){
 
             if (found === false){
                 var error = new_error('provided argument is not of type within specified set', check_me);
-                console.log('provided argument is not of type within specified set');
+//                console.log('provided argument is not of type within specified set');
                 return error;
             }
             return found;
@@ -93,7 +93,7 @@ var Typebot = function(){
                 if(check_me === i) found = true;
             }
             if(!found) {
-                console.log('provided argument is not of type within specified set');
+//                console.log('provided argument is not of type within specified set');
                 var error = new_error('provided argument is not of type within specified set', check_me);
                 return error;
             }
@@ -125,19 +125,19 @@ var Typebot = function(){
 
                 if (typeof value.type !== 'undefined'){
                     if(typeof value.type === 'object' && array_checker(value.type)){
-                        console.log('type is an array of type values');
+//                        console.log('type is an array of type values');
                         error = check_in_range(current_check_me, value.type);
                         add_error(errors, error);
                         // OR \ NOT parsing
                     }
                     if (typeof value.type === 'string'){
-                        console.log('type is a single type');
+//                        console.log('type is a single type');
 //                        console.log(current_check_me + ' ' + value.type);
                         error = single_type_checker(current_check_me, value.type);
                         add_error(errors, error);
                     }
                     if (typeof value.range === 'string') {
-                        console.log('range specified');
+//                        console.log('range specified');
                         error = check_in_value_range(current_check_me, value.range);
                         add_error(errors, error);
                     }
@@ -179,10 +179,12 @@ var Typebot = function(){
 
         // = = = = Public = = = = //
 
-        this.check = function(check_me, should_be, extra_error_message){
-            var test = complex_checker(check_me, should_be);
-            console.log(test);
-            return test;
+        this.check = function(check_me, should_be, extra_error_message, automatic_logging){
+            var checker_output = complex_checker(check_me, should_be);
+//            if(automatic_logging && !checker_output){
+                console.log(checker_output);
+//            }
+            return checker_output;
         }
 
         this.log_errors = function(errors){
