@@ -1,7 +1,7 @@
-## Typebot
+# Typebot
 Typebot is a flexible Javascript typechecker. It is primarily designed to typecheck against Javascript primitive types.
 
-### Usage
+## Usage
 	var typebot = Typebot();
 	var provided = {
 	    arg1 : "im a string!",
@@ -30,7 +30,7 @@ Alternatively, you can specify that Typebot should automatically log errors as t
 
 	typebot.check(check_me, should_be, true);
 
-### More Specialized Usage
+## More Specialized Usage
 
 Typebot allows the exclusion of certain types. For instance, let's say you want to make sure a variable is not a boolean.
 
@@ -66,7 +66,7 @@ You can also specify a range of values:
 
 Note that the range property must be a string.
 
-### Simplest Usage
+## Simplest Usage
 
 I am working on a simpler version which will accept arguments like this:
 
