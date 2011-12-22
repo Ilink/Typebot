@@ -123,6 +123,17 @@ var Typebot = function(){
             return found;
         }
 
+		var check_value_with_regex = function(check_me, regex){
+			if (regex.test(check_me)){
+				return true
+			} else {
+				var error = new_error('provided regex did not find any matches!', check_me)
+				return error;
+			}
+		}
+
+		// = = = Error Handling = = = //
+
         var add_error = function(errors, error){
             if(error !== true){
                 errors.push(error); // this may seem odd: either the checker returns True, meaning no error or it returns an error
@@ -147,6 +158,7 @@ var Typebot = function(){
                 var current_check_me = check_me[key];
 
                 if (typeof value.type !== 'undefined'){
+	
                     if(typeof value.type === 'object' && generic_checker(value.type, 'Array')){
                        console.log('type is an array of type values');
                         error = check_in_range(current_check_me, value.type);
@@ -164,6 +176,11 @@ var Typebot = function(){
                         error = check_in_value_range(current_check_me, value.range);
                         add_error(errors, error);
                     }
+					if (generic_checker(value.regex, 'RegExp')){
+						error = check_value_with_regex(current_check_me, value.regex);
+						add_error(errors, error);
+					}
+					
                 } else throw 'Type must be defined';
 
             });
@@ -204,9 +221,11 @@ var Typebot = function(){
 
         this.check = function(check_me, should_be, extra_error_message, options){
             var checker_output = complex_checker(check_me, should_be);
-           	if(options.automatic_logging && !checker_output){
-                console.log(checker_output);
-           	}
+			if(typeof options !== 'undefined' && typeof options.automatic_logging !== 'undefined'){ 
+           		if(options.automatic_logging && !checker_output){
+	                console.log(checker_output);
+	           	}
+			}
             return checker_output;
         }
 
