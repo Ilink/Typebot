@@ -41,12 +41,35 @@ var Typebot = function(){
             return range;
         }
 
+		var generic_checker = function(to_check, type){
+			if (typeof type === 'string'){
+				type = (type.substring(0,1).toUpperCase() +''+ type.slice(1, type.length));
+				var acceptable = {
+					"Array" : true,
+					"RegExp" : true,
+					"Object" : true,
+					"String" : true
+				}
+				if (acceptable[type]) { 
+					return Object.prototype.toString.call(to_check) === '[object '+ type +']' 
+				}
+				console.log(type + ' is not a valid type. Valid types include: ');
+				console.log(acceptable);
+				return false
+			}
+			return false
+		}
+
         var array_checker = function(arr){
-            return Object.prototype.toString.call(arr) === '[object Array]';
+            return Object.prototype.toString.call(arr) === '[object Array]'; // return true if argument is an array
         }
 
+		var regex_checker = function(regex) {
+			return Object.prototype.toString.call(regex) === '[object RegExp]' // return true if argument is regexp object
+		}
+
         var object_checker = function(obj){
-            return Object.prototype.toString.call(arr) === '[object Object]';
+            return Object.prototype.toString.call(arr) === '[object Object]'; // return true if argument is an object
         }
 
         var single_type_checker = function(check_me, should_be){
@@ -124,8 +147,8 @@ var Typebot = function(){
                 var current_check_me = check_me[key];
 
                 if (typeof value.type !== 'undefined'){
-                    if(typeof value.type === 'object' && array_checker(value.type)){
-//                        console.log('type is an array of type values');
+                    if(typeof value.type === 'object' && generic_checker(value.type, 'Array')){
+                       console.log('type is an array of type values');
                         error = check_in_range(current_check_me, value.type);
                         add_error(errors, error);
                         // OR \ NOT parsing
@@ -179,11 +202,11 @@ var Typebot = function(){
 
         // = = = = Public = = = = //
 
-        this.check = function(check_me, should_be, extra_error_message, automatic_logging){
+        this.check = function(check_me, should_be, extra_error_message, options){
             var checker_output = complex_checker(check_me, should_be);
-//            if(automatic_logging && !checker_output){
+           	if(options.automatic_logging && !checker_output){
                 console.log(checker_output);
-//            }
+           	}
             return checker_output;
         }
 
